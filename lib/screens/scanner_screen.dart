@@ -19,7 +19,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text("Scan QR")),
       body: MobileScanner(
-        allowDuplicates: false,
         onDetect: (capture) {
           if (found) return;
           final barcode = capture.barcodes.isNotEmpty ? capture.barcodes.first.rawValue : null;

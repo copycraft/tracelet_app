@@ -29,41 +29,45 @@ class TraceletApp extends StatelessWidget {
           home: const RootRouter(),
           onGenerateRoute: (settings) {
             final args = settings.arguments;
+            final client = apiProv.client;
+
+            if (client == null) {
+              return _errorRoute("API client not initialized");
+            }
 
             switch (settings.name) {
               case "/add_event":
-                if (args is Map<String, dynamic> &&
-                    args.containsKey("trackingNumber")) {
+                if (args is Map<String, dynamic> && args.containsKey("trackingNumber")) {
                   return MaterialPageRoute(
                     builder: (_) => AddEventScreen(
-                      apiClient: apiProv.client!,
+                      apiClient: client,
                       trackingNumber: args["trackingNumber"],
                     ),
                   );
                 }
-                return _errorRoute("Missing trackingNumber");
+                return _errorRoute("Missing trackingNumber for AddEventScreen");
 
               case "/trace":
-                if (args is Map<String, dynamic> && args.containsKey("entityId")) {
+                if (args is Map<String, dynamic> && args.containsKey("trackingNumber")) {
                   return MaterialPageRoute(
                     builder: (_) => TraceScreen(
-                      apiClient: apiProv.client!,
-                      entityId: args["entityId"],
+                      apiClient: client,
+                      trackingNumber: args["trackingNumber"],
                     ),
                   );
                 }
-                return _errorRoute("Missing entityId");
+                return _errorRoute("Missing trackingNumber for TraceScreen");
 
               case "/trace_root":
                 if (args is Map<String, dynamic> && args.containsKey("rootId")) {
                   return MaterialPageRoute(
                     builder: (_) => TraceRootScreen(
-                      apiClient: apiProv.client!,
+                      apiClient: client,
                       rootId: args["rootId"],
                     ),
                   );
                 }
-                return _errorRoute("Missing rootId");
+                return _errorRoute("Missing rootId for TraceRootScreen");
 
               default:
                 return null;
@@ -102,9 +106,17 @@ class RootRouter extends StatelessWidget {
 
         if (apiProv.baseUrl == null || apiProv.baseUrl!.isEmpty) {
           return const IpEntryScreen();
-        } else {
-          return DashboardScreen(apiClient: apiProv.client!);
         }
+
+        final client = apiProv.client;
+        if (client == null) {
+          return Scaffold(
+            body: Center(child: Text("API client failed to initialize")),
+          );
+        }
+
+        // Main screen: Dashboard
+        return DashboardScreen(apiClient: client);
       },
     );
   }

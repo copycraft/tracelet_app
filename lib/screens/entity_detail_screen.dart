@@ -59,17 +59,18 @@ class _EntityDetailScreenState extends State<EntityDetailScreen> {
                 ),
               ),
             const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => TraceScreen(
-                    apiClient: widget.apiClient,
-                    entityId: widget.entityId, // use entityId here
-                  ),
-                ));
-              },
-              child: const Text("View Trace Tree"),
-            ),
+            if (parcel != null && parcel!.externalId != null)
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => TraceScreen(
+                      apiClient: widget.apiClient,
+                      trackingNumber: parcel!.externalId!, // pass trackingNumber
+                    ),
+                  ));
+                },
+                child: const Text("View Trace Tree"),
+              ),
             if (error != null)
               Padding(
                 padding: const EdgeInsets.only(top: 12),
