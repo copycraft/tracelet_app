@@ -1,12 +1,10 @@
-// small place for constants and helper mappings
-
+// lib/core/constants.dart
 import 'package:flutter/material.dart';
 
 class Constants {
   static const appName = "Tracelet";
 }
 
-// map API string statuses to a friendly label and color
 Color statusColor(String status) {
   switch (status) {
     case "delivered":

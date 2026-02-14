@@ -1,3 +1,4 @@
+// lib/screens/create_package_screen.dart
 import 'package:flutter/material.dart';
 import '../core/api_client.dart';
 
@@ -37,7 +38,6 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
     });
 
     final payload = {
-      // server expects tracking_number or external id; adapt as needed
       "tracking_number": _tracking.text.trim(),
       "sender": _sender.text.trim(),
       "recipient": _recipient.text.trim(),
@@ -48,7 +48,6 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
     try {
       final res = await widget.apiClient.createPackage(payload);
       setState(() => _message = "Created successfully: ${res['id'] ?? res['external_id'] ?? ''}");
-      // close and signal parent to refresh after a short delay so user sees message
       await Future.delayed(const Duration(milliseconds: 450));
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {

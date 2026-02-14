@@ -1,27 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import '../models/trace_event.dart';
 
+/// Example Event model
+class Event {
+  final String eventType;
+  final String? actor;
+  final String? location;
+  final DateTime timestamp;
+
+  Event({
+    required this.eventType,
+    this.actor,
+    this.location,
+    required this.timestamp,
+  });
+}
+
+/// EventTile widget
 class EventTile extends StatelessWidget {
-  final TraceEvent event;
+  final Event event;
 
-  const EventTile({
-    Key? key,
-    required this.event,
-  }) : super(key: key);
+  const EventTile({super.key, required this.event});
 
+  // Map status to colors for the little dot
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
-      case "delivered":
-        return Colors.green;
-      case "exception":
-      case "failed_delivery":
-        return Colors.red;
-      case "in_transit":
-      case "out_for_delivery":
+      case 'created':
         return Colors.blue;
-      case "customs":
+      case 'out_for_delivery':
         return Colors.orange;
+      case 'delivered':
+        return Colors.green;
+      case 'cancelled':
+        return Colors.red;
       default:
         return Colors.grey;
     }
@@ -29,29 +39,24 @@ class EventTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = DateTime.tryParse(event.timestamp);
-    final formattedDate = date != null
-        ? DateFormat('yyyy-MM-dd HH:mm').format(date)
-        : event.timestamp;
-
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey.shade100, // softer background instead of pure white
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 6,
             offset: const Offset(0, 3),
-          )
+          ),
         ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Status Dot
+          // Colored status dot
           Container(
             width: 14,
             height: 14,
@@ -61,65 +66,40 @@ class EventTile extends StatelessWidget {
               shape: BoxShape.circle,
             ),
           ),
-
           const SizedBox(width: 12),
-
-          // Event Details
+          // Event details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Event type
                 Text(
                   event.eventType.toUpperCase(),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black, // black text
                   ),
                 ),
-
                 const SizedBox(height: 4),
-
-                if (event.location != null)
+                // Actor / Location (if present)
+                if (event.actor != null || event.location != null)
                   Text(
-                    "Location: ${event.location}",
-                    style: const TextStyle(fontSize: 14),
+                    '${event.actor ?? ""}${event.actor != null && event.location != null ? " • " : ""}${event.location ?? ""}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade800, // dark grey
+                    ),
                   ),
-
-                if (event.actor != null)
-                  Text(
-                    "Actor: ${event.actor}",
-                    style: const TextStyle(fontSize: 14),
-                  ),
-
-                const SizedBox(height: 6),
-
+                const SizedBox(height: 4),
+                // Timestamp
                 Text(
-                  formattedDate,
+                  '${event.timestamp}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,
                   ),
                 ),
-
-                if (event.payload != null &&
-                    event.payload!.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        event.payload.toString(),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontFamily: "monospace",
-                        ),
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),

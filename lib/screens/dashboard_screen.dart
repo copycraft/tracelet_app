@@ -1,3 +1,4 @@
+// lib/screens/dashboard_screen.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../core/api_client.dart';
@@ -69,7 +70,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     await Navigator.of(context).push(MaterialPageRoute(
       builder: (_) => CreatePackageScreen(apiClient: widget.apiClient),
     ));
-    // After return, refresh packages and stats
     await _loadAll();
   }
 
@@ -92,7 +92,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // search row
             Row(children: [
               Expanded(
                 child: TextField(
@@ -110,7 +109,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ]),
             const SizedBox(height: 16),
 
-            // stats card
             if (loadingStats)
               const Card(child: Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator())))
             else
@@ -143,7 +141,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             const SizedBox(height: 12),
 
-            // Actions
             Row(
               children: [
                 ElevatedButton.icon(
@@ -169,7 +166,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             const SizedBox(height: 16),
 
-            // package list
             Text("Packages", style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             if (loadingPackages)
@@ -195,7 +191,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         subtitle: Text(subtitle),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () {
-                          // open tracking screen by external id / tracking number
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (_) => TrackingScreen(apiClient: widget.apiClient, trackingNumber: ext),
                           ));
