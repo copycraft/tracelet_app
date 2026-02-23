@@ -1,4 +1,5 @@
 // lib/screens/ip_entry_screen.dart
+// Enter server base URL — keeps initialization logic
 import 'package:flutter/material.dart';
 import '../core/api_client.dart';
 import 'dashboard_screen.dart';
@@ -57,40 +58,54 @@ class _IpEntryScreenState extends State<IpEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text("Enter Tracelet Server URL")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
           children: [
             const Text(
               "Enter the full base URL of your Tracelet server "
                   "(example: http://192.168.1.100:8000)",
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Base URL",
+
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceVariant,
+                borderRadius: BorderRadius.circular(12),
               ),
-              keyboardType: TextInputType.url,
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _saving ? null : _saveBaseUrl,
-                child: _saving
-                    ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: Colors.white,
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: "Base URL",
+                      isDense: true,
+                    ),
+                    keyboardType: TextInputType.url,
                   ),
-                )
-                    : const Text("Connect & Save"),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: _saving ? null : _saveBaseUrl,
+                      child: _saving
+                          ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      )
+                          : const Text("Connect & Save"),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

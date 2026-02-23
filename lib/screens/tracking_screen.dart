@@ -1,4 +1,5 @@
 // lib/screens/tracking_screen.dart
+// Tracking screen: native PDF download, event extraction and ordering preserved; visual polish applied
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -218,6 +219,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Track: ${widget.trackingNumber}"),
@@ -239,7 +241,11 @@ class _TrackingScreenState extends State<TrackingScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Card(
+            Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: ListTile(
                 title: Text(
                   (data['external_id']?.toString() ?? data['tracking_number']?.toString() ?? widget.trackingNumber),
@@ -249,10 +255,11 @@ class _TrackingScreenState extends State<TrackingScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                ElevatedButton.icon(
+                FilledButton.icon(
                   onPressed: pdfLoading ? null : _downloadAndOpenPdf,
                   icon: pdfLoading
                       ? const SizedBox(

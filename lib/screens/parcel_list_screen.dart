@@ -1,4 +1,5 @@
 // lib/screens/parcel_list_screen.dart
+// Simple parcel list screen — updated visual surfaces only
 import 'package:flutter/material.dart';
 import '../core/api_client.dart';
 import 'tracking_screen.dart';
@@ -36,6 +37,7 @@ class _ParcelListScreenState extends State<ParcelListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Parcels"),
@@ -51,22 +53,30 @@ class _ParcelListScreenState extends State<ParcelListScreen> {
           : error != null
           ? Center(child: Text("Error: $error"))
           : ListView.builder(
+        padding: const EdgeInsets.all(8),
         itemCount: packages.length,
         itemBuilder: (context, i) {
           final p = packages[i] as Map<String, dynamic>;
           final ext = p['external_id'] ?? p['id'] ?? 'unknown';
           final sub = p['type'] ?? '';
-          return ListTile(
-            title: Text(ext.toString()),
-            subtitle: Text(sub.toString()),
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => TrackingScreen(
-                  apiClient: widget.apiClient,
-                  trackingNumber: ext.toString(),
-                ),
-              ));
-            },
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 6),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceVariant,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ListTile(
+              title: Text(ext.toString()),
+              subtitle: Text(sub.toString()),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => TrackingScreen(
+                    apiClient: widget.apiClient,
+                    trackingNumber: ext.toString(),
+                  ),
+                ));
+              },
+            ),
           );
         },
       ),

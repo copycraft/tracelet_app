@@ -1,4 +1,5 @@
 // lib/screens/create_package_screen.dart
+// Create package form — M3 polish (preserves all logic & methods)
 import 'package:flutter/material.dart';
 import '../core/api_client.dart';
 
@@ -42,16 +43,27 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
       "sender": _sender.text.trim(),
       "recipient": _recipient.text.trim(),
       "destination": _destination.text.trim(),
-      if (_weight.text.trim().isNotEmpty) "weight_kg": double.tryParse(_weight.text.trim()) ?? 0.0,
+      if (_weight.text.trim().isNotEmpty)
+        "weight_kg": double.tryParse(_weight.text.trim()) ?? 0.0,
     };
 
     try {
       final res = await widget.apiClient.createPackage(payload);
-      setState(() => _message = "Created successfully: ${res['id'] ?? res['external_id'] ?? ''}");
+      final id = res['id'] ?? res['external_id'] ?? '';
+      final msg = "Created successfully: $id";
+      setState(() => _message = msg);
+      // Show success as snack bar for better UX
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+      }
       await Future.delayed(const Duration(milliseconds: 450));
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
-      setState(() => _message = "Error creating package: $e");
+      final err = "Error creating package: $e";
+      setState(() => _message = err);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
+      }
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -59,47 +71,76 @@ class _CreatePackageScreenState extends State<CreatePackageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text("Create Package")),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
+      body: SafeArea(
         child: Form(
           key: _formKey,
           child: ListView(
+            padding: const EdgeInsets.all(20),
             children: [
+              Text("Package Details", style: theme.textTheme.titleLarge),
+              const SizedBox(height: 16),
+
               TextFormField(
                 controller: _tracking,
-                decoration: const InputDecoration(labelText: "Tracking Number / External ID"),
-                validator: (v) => (v == null || v.trim().isEmpty) ? "required" : null,
+                decoration: const InputDecoration(
+                  labelText: "Tracking Number / External ID",
+                ),
+                validator: (v) =>
+                (v == null || v.trim().isEmpty) ? "Required" : null,
               ),
+              const SizedBox(height: 12),
+
               TextFormField(
                 controller: _sender,
                 decoration: const InputDecoration(labelText: "Sender"),
-                validator: (v) => (v == null || v.trim().isEmpty) ? "required" : null,
+                validator: (v) =>
+                (v == null || v.trim().isEmpty) ? "Required" : null,
               ),
+              const SizedBox(height: 12),
+
               TextFormField(
                 controller: _recipient,
                 decoration: const InputDecoration(labelText: "Recipient"),
-                validator: (v) => (v == null || v.trim().isEmpty) ? "required" : null,
+                validator: (v) =>
+                (v == null || v.trim().isEmpty) ? "Required" : null,
               ),
+              const SizedBox(height: 12),
+
               TextFormField(
                 controller: _destination,
                 decoration: const InputDecoration(labelText: "Destination"),
-                validator: (v) => (v == null || v.trim().isEmpty) ? "required" : null,
+                validator: (v) =>
+                (v == null || v.trim().isEmpty) ? "Required" : null,
               ),
+              const SizedBox(height: 12),
+
               TextFormField(
                 controller: _weight,
                 decoration: const InputDecoration(labelText: "Weight (kg)"),
                 keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
+              const SizedBox(height: 20),
+
+              FilledButton.icon(
                 onPressed: _sending ? null : _submit,
-                child: _sending ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Text("Create"),
+                icon: _sending
+                    ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+                    : const Icon(Icons.local_shipping),
+                label: Text(_sending ? "Creating..." : "Create Package"),
               ),
+
               if (_message != null) ...[
                 const SizedBox(height: 12),
-                Text(_message!, style: const TextStyle(color: Colors.white70)),
+                Text(_message!,
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
               ],
             ],
           ),

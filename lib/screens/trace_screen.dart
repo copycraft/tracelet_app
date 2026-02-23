@@ -1,3 +1,5 @@
+// lib/screens/trace_screen.dart
+// Parcel trace display — keeps the complex fallback traceTree logic intact
 import 'package:flutter/material.dart';
 import '../core/api_client.dart';
 import '../models/parcel.dart';
@@ -88,8 +90,12 @@ class _TraceScreenState extends State<TraceScreen> {
 
   Widget _buildEventTile(TraceEvent e) {
     final ts = e.timestamp != null ? e.timestamp!.toLocal().toString() : 'unknown time';
-    return Card(
+    return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceVariant,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: ListTile(
         title: Text("${e.eventType}${e.status != null ? ' — ${e.status}' : ''}"),
         subtitle: Column(
@@ -97,7 +103,8 @@ class _TraceScreenState extends State<TraceScreen> {
           children: [
             if (e.location != null && e.location!.isNotEmpty) Text("Location: ${e.location}"),
             if (e.actor != null && e.actor!.isNotEmpty) Text("Actor: ${e.actor}"),
-            if (e.payload != null && e.payload!.isNotEmpty) Text("Notes: ${e.payload!['notes']?.toString() ?? ''}"),
+            if (e.payload != null && e.payload!.isNotEmpty)
+              Text("Notes: ${e.payload!['notes']?.toString() ?? ''}"),
             Text("When: $ts"),
           ],
         ),
@@ -118,7 +125,11 @@ class _TraceScreenState extends State<TraceScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Card(
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: ListTile(
                 title: Text(parcel!.externalId ?? parcel!.id),
                 subtitle: Text("Type: ${parcel!.type}\nCreated: ${parcel!.createdAt}"),
